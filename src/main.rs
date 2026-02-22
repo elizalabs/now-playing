@@ -24,6 +24,8 @@ enum Commands {
     Title,
     /// Print the artist of the media
     Artist,
+    /// Print the album
+    Album,
     /// Print the current position in the media
     /// (may be delayed for a few seconds due to WinRT restrictions)
     Position,
@@ -37,6 +39,8 @@ enum Commands {
     Pause,
     /// Toggle the state of the media between playing and paused
     Toggle,
+    /// Skip to the next track
+    Skip
 }
 
 #[tokio::main]
@@ -49,6 +53,7 @@ async fn main() -> Result<(), ()> {
                 // commands that fetch the state
                 Commands::Title => println!("{}", media_session.get_title()),
                 Commands::Artist => println!("{}", media_session.get_artist()),
+                Commands::Album => println!("{}", media_session.get_album()),
                 Commands::Position => println!("{}", media_session.get_position()),
                 Commands::Duration => println!("{}", media_session.get_duration()),
                 Commands::Status => println!("{:#?}", media_session.get_status()),
@@ -56,6 +61,7 @@ async fn main() -> Result<(), ()> {
                 Commands::Play => println!("{}", media_session.play()),
                 Commands::Pause => println!("{}", media_session.pause()),
                 Commands::Toggle => println!("{}", media_session.toggle()),
+                Commands::Skip => println!("{}", media_session.skip()),
             }
         } else {
             println!("{}", media_session);

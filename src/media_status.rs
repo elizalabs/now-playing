@@ -1,7 +1,7 @@
 use std::fmt;
 use windows::Media::Control::GlobalSystemMediaTransportControlsSessionPlaybackStatus as WinPlaybackStatus;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum MediaStatus {
     Closed,
     Opened,

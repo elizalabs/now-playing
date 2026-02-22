@@ -35,6 +35,10 @@ impl MediaSession {
         self.properties.Title().unwrap_or_default().to_string()
     }
 
+    pub fn get_album(&self) -> String {
+        self.properties.AlbumTitle().unwrap_or_default().to_string()
+    }
+
     pub fn get_position(&self) -> HumanDurationData {
         self.timeline.Position().unwrap_or_default().cleanup()
     }
@@ -80,9 +84,13 @@ impl MediaSession {
     //     todo!()
     // }
 
-    // pub fn skip() -> bool {
-    //     todo!()
-    // }
+    pub fn skip(&self) -> bool {
+        if let Ok(res) = self.session.TrySkipNextAsync() {
+            res.get().unwrap_or(false)
+        } else {
+            false
+        }
+    }
 
     // pub fn previous() -> bool {
     //     todo!()
@@ -95,12 +103,28 @@ impl MediaSession {
 
 impl fmt::Display for MediaSession {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{} - {} ({})",
-            self.get_title(),
-            self.get_artist(),
-            self.get_position()
-        )
+        if self.get_status() == MediaStatus::Playing {
+            if self.get_album().is_empty() {
+                write!(
+                    f,
+                    "{} - {}",
+                    self.get_artist(),
+                    self.get_title()
+                )
+            } else {
+                write!(
+                    f,
+                    "{} - {} ({})",
+                    self.get_artist(),
+                    self.get_title(),
+                    self.get_album()
+                )
+            }
+        } else {
+            write!(
+                f,
+                "No media playing"
+            )
+        }
     }
 }
