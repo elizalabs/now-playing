@@ -1,4 +1,4 @@
-use crate::cleanup_timespan::Cleanup;
+use crate::{cleanup_timespan::Cleanup, player_options::Player};
 use crate::MediaStatus;
 use human_repr::HumanDurationData;
 use std::fmt;
@@ -15,9 +15,16 @@ pub struct MediaSession {
 }
 
 impl MediaSession {
-    pub async fn new() -> Result<Self, windows::core::Error> {
+    pub async fn new(player: Option<Player>) -> Result<Self, windows::core::Error> {
         let mp = GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.await?;
-        let session = mp.GetCurrentSession()?;
+
+        let session = match &player {
+            None => mp.GetCurrentSession()?,
+            Some(p) => mp.GetSessions()?.into_iter().find(|session|
+                session.SourceAppUserModelId().unwrap() == p.id()
+            ).expect("Player not running")
+        };
+
         let properties = session.TryGetMediaPropertiesAsync()?.await?;
         let timeline = session.GetTimelineProperties()?;
         Ok(Self {
