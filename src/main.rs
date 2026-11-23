@@ -1,10 +1,15 @@
 mod cleanup_timespan;
 mod media_session;
 mod media_status;
+mod player_options;
+
+use std::panic;
 
 use crate::media_session::MediaSession;
 use crate::media_status::MediaStatus;
+use crate::player_options::Player;
 use clap::{Parser, Subcommand};
+
 #[derive(Debug, Parser)]
 #[command(
     name = clap::crate_name!(),
@@ -16,6 +21,10 @@ use clap::{Parser, Subcommand};
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
+
+    /// Specify a player instead of letting Windows decide
+    #[arg(short, long, value_enum)]
+    player: Option<Player>,
 }
 
 #[derive(Debug, Subcommand)]
@@ -45,9 +54,18 @@ enum Commands {
 
 #[tokio::main]
 async fn main() -> Result<(), ()> {
+    // set a custom panic handler so we can print clean error messages
+    panic::set_hook(Box::new(|info| {
+        if let Some(s) = info.payload_as_str() {
+            println!("Error: {s}");
+        } else {
+            println!("An unknown error occurred");
+        }
+    }));
+
     let cli = Cli::parse();
 
-    if let Ok(media_session) = MediaSession::new().await {
+    if let Ok(media_session) = MediaSession::new(cli.player).await {
         if let Some(command) = cli.command {
             match command {
                 // commands that fetch the state

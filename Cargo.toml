@@ -1,7 +1,7 @@
 [package]
 name = "now-playing"
-version = "1.1.0"
-authors = ["Dukk <acedaksh07@gmail.com>", "es183923"]
+version = "2.1.0"
+authors = ["elizalabs", "Dukk <acedaksh07@gmail.com>", "es183923"]
 edition = "2021"
 description = "A cli to get information and control media on Windows."
 repository = "https://github.com/DakshG07/now-playing"
@@ -22,6 +22,7 @@ features = [
     "Media",
     "Media_Control",
     "Foundation",
+    "Foundation_Collections"
 ]
 
 [dependencies.tokio]
